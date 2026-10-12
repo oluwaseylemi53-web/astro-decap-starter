@@ -1,0 +1,6 @@
+---
+import O2Layout from '../layouts/O2Layout.astro';
+import Admin from '../components/o2/Admin';
+export const prerender = true;
+---
+<O2Layout title="Editorial dashboard" noindex><Admin client:load/></O2Layout>

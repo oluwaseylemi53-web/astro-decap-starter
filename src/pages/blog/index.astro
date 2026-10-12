@@ -1,0 +1,14 @@
+---
+import O2Layout from '../../layouts/O2Layout.astro';
+import ArticleFeed from '../../components/o2/ArticleFeed';
+import Newsletter from '../../components/o2/Newsletter';
+import { db } from '../../../db';
+import { posts } from '../../../db/schema';
+import { postSummary } from '../../../db/queries.js';
+import { desc, eq } from 'drizzle-orm';
+import type { Post } from '../../lib/types';
+let articles: Post[] = [];
+let unavailable = false;
+try { articles = await db.select(postSummary).from(posts).where(eq(posts.status, 'published')).orderBy(desc(posts.publishedAt)).limit(100); } catch { unavailable = true; }
+---
+<O2Layout title="The journal"><ArticleFeed initialPosts={articles} full unavailable={unavailable} client:load/><Newsletter client:visible/></O2Layout>

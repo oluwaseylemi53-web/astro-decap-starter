@@ -1,0 +1,6 @@
+---
+import O2Layout from '../layouts/O2Layout.astro';
+import Account from '../components/o2/Account';
+export const prerender = true;
+---
+<O2Layout title="Your reader space" noindex><Account client:load/></O2Layout>

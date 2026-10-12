@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /api/
+Disallow: /unsubscribe
+Sitemap: https://cozy-gnome-o2.netlify.app/sitemap.xml
