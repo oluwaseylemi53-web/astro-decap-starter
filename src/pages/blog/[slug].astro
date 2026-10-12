@@ -1,0 +1,26 @@
+---
+import O2Layout from '../../layouts/O2Layout.astro';
+import Discussion from '../../components/o2/Discussion';
+import Newsletter from '../../components/o2/Newsletter';
+import { db } from '../../../db';
+import { posts } from '../../../db/schema';
+import { and, eq } from 'drizzle-orm';
+import { marked } from 'marked';
+import sanitizeHtml from 'sanitize-html';
+import { formatDate, type Post } from '../../lib/types';
+import { samplePosts } from '../../lib/sample-posts';
+let post: Post | undefined;
+let unavailable = false;
+try { [post] = await db.select().from(posts).where(and(eq(posts.slug, Astro.params.slug!), eq(posts.status, 'published'))); }
+catch { post = samplePosts.find((article) => article.slug === Astro.params.slug); unavailable = true; }
+if (!post) return Astro.rewrite(unavailable ? '/503' : '/404');
+if (unavailable) Astro.response.status = 503;
+Astro.response.headers.set('Cache-Control', 'no-store');
+const html = sanitizeHtml(await marked.parse(post.content), { allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img'], allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, img: ['src', 'alt', 'width', 'height', 'loading'] }, allowedSchemes: ['https', 'mailto'], allowProtocolRelative: false });
+const structured = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description: post.excerpt, datePublished: new Date(post.publishedAt).toISOString(), dateModified: new Date(post.updatedAt || post.publishedAt).toISOString(), author: { '@type': 'Organization', name: post.author }, publisher: { '@type': 'Organization', name: 'O2 Media' }, image: new URL(post.cover, Astro.site).href, mainEntityOfPage: new URL(`/blog/${post.slug}`, Astro.site).href };
+---
+<O2Layout title={post.title} description={post.excerpt} image={post.cover} article noindex={unavailable}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(structured).replace(/</g, '\\u003c')}/>
+  <div class="article-header wrap"><div class="breadcrumbs"><a href="/">Home</a><span>/</span><a href="/blog">The journal</a><span>/</span><a href={`/blog?category=${encodeURIComponent(post.category)}`}>{post.category}</a></div><span class="pill">{post.category}</span><h1>{post.title}</h1><p>{post.excerpt}</p><div class="card-byline"><span class="avatar">O<span>2</span></span><span>{post.author}<small>{formatDate(post.publishedAt)} · {post.readMinutes} min read</small></span></div>{post.sample && <div class="sample-note">Sample editorial article created for the launch of O2 Media. The editorial team can edit, replace, or remove this story.</div>}{unavailable && <div class="notice">Preview article: the live database is unavailable. Reader actions may be temporarily unavailable.</div>}</div>
+  <div class="wrap"><img class="article-cover" src={post.cover} alt={`Editorial illustration for ${post.title}`} width="1240" height="470" fetchpriority="high"/><div class="article-layout"><aside class="article-aside"><h3>A FRESH PERSPECTIVE</h3><p>Ideas to take with you.<br/>A conversation to build on.</p><a href={`/blog?category=${encodeURIComponent(post.category)}`}>More in {post.category} ↗</a></aside><div class="prose" set:html={html}/><div/></div><Discussion postId={post.id} title={post.title} client:load/></div><Newsletter client:visible/>
+</O2Layout>

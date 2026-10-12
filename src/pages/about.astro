@@ -1,17 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
-import { AboutPage } from '../components/pages/AboutPage';
-import { getEntry, render } from 'astro:content';
-
-const page = await getEntry('pages', 'about');
-const d = page.data;
-const { Content } = await render(page);
+import O2Layout from '../layouts/O2Layout.astro';
+import Newsletter from '../components/o2/Newsletter';
+export const prerender = true;
 ---
-
-<Base title={d.seo_title ?? d.title} description={d.seo_description}>
-  <AboutPage
-    client:load
-    heroHeading={d.hero_heading}
-    heroSubheading={d.hero_subheading}
-  />
-</Base>
+<O2Layout title="A space for curious minds"><section class="wrap text-page"><div class="page-heading"><span class="eyebrow"><span class="live-dot"/>A LITTLE ABOUT O2 MEDIA</span><h1>The internet is loud.<br/><em>Let’s make it meaningful.</em></h1><p>We’re building a space for curious people working at the intersection of digital media, marketing, and creative thinking.</p></div><div class="tagline-art"><img src="/media/brand.svg" width="900" height="650" alt="Connected geometric shapes in the O2 Media brand palette"/></div><div class="prose"><h2>A fresh perspective, not more noise.</h2><p>O2 Media Blog explores how brands communicate, how creators find their voice, and how thoughtful ideas become useful work. Our focus is practical: clear thinking, real examples, and something you can take into your next project.</p><h2>For the people making things happen.</h2><p>Whether you’re building a brand, growing a community, or figuring out what to make next, this journal is a place to pause and find a different perspective. We cover strategy, social media, content creation, branding, and the ideas shaping our industry.</p><h2>A conversation worth having.</h2><p>Good ideas get better when people bring their experience to the table. Create a free reader account, save the stories that speak to you, and add your voice to a discussion. We review comments to keep the conversation useful and respectful.</p><h2>Our editorial starting point.</h2><p>This new publication launches with clearly labeled sample articles. These are original introductory pieces created for the website, not reporting on current events. Our editorial team can replace them and publish new stories through the dashboard.</p><p>Have a useful perspective or a collaboration in mind? <a href="/contact">We’d love to hear it.</a></p></div></section><Newsletter client:visible/></O2Layout>

@@ -1,0 +1,6 @@
+---
+import O2Layout from '../layouts/O2Layout.astro';
+Astro.response.status = 503;
+Astro.response.headers.set('Retry-After', '60');
+---
+<O2Layout title="A brief pause" noindex><section class="error-page wrap"><span class="eyebrow" style="justify-content:center">A BRIEF PAUSE</span><h1>Taking a little breather.</h1><p>The live journal is temporarily unavailable. Please try again shortly.</p><a class="button" href="/">Back to O2 Media ↗</a></section></O2Layout>

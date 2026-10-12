@@ -1,31 +1,26 @@
 ---
-import Base from '../layouts/Base.astro';
-import { HomePage } from '../components/home/HomePage';
-import { getEntry } from 'astro:content';
-
-const page = await getEntry('pages', 'home');
-const d = page.data;
+import O2Layout from '../layouts/O2Layout.astro';
+import ArticleFeed from '../components/o2/ArticleFeed';
+import Newsletter from '../components/o2/Newsletter';
+import { db } from '../../db';
+import { posts } from '../../db/schema';
+import { postSummary } from '../../db/queries.js';
+import { desc, eq } from 'drizzle-orm';
+import { samplePosts } from '../lib/sample-posts';
+import { formatDate, type Post } from '../lib/types';
+let articles: Post[] = [];
+let unavailable = false;
+try { articles = await db.select(postSummary).from(posts).where(eq(posts.status, 'published')).orderBy(desc(posts.publishedAt)).limit(100); }
+catch { articles = samplePosts; unavailable = true; }
+const featured = articles.find((post) => post.featured) || articles[0];
 ---
 
-<Base title={d.seo_title ?? d.title} description={d.seo_description}>
-  <HomePage
-    client:load
-    heroLabel={d.hero_label}
-    heroHeading={d.hero_heading}
-    heroSubheading={d.hero_subheading}
-    heroCtaText={d.hero_cta_text}
-    heroCtaUrl={d.hero_cta_url}
-    stat1Number={d.hero_stat_1_number}
-    stat1Label={d.hero_stat_1_label}
-    stat2Number={d.hero_stat_2_number}
-    stat2Label={d.hero_stat_2_label}
-    heroQuote={d.hero_quote}
-    heroQuoteAuthor={d.hero_quote_author}
-    heroQuoteRole={d.hero_quote_role}
-    kateHeading={d.kate_heading}
-    kateBio={d.kate_bio}
-    kateQuote={d.kate_quote}
-    ctaHeading={d.cta_heading}
-    ctaText={d.cta_text}
-  />
-</Base>
+<O2Layout title="A fresh perspective on a digital world">
+  <section class="intro wrap"><div><div class="eyebrow"><span class="live-dot"/>THE DIGITAL WORLD, WITH A HUMAN TOUCH</div><h1>A fresh perspective<br/>on a <em>digital world.</em><svg class="intro-spark" viewBox="0 0 70 70" fill="none" aria-hidden="true"><path d="M35 0v70M0 35h70M10 10l50 50M10 60l50-50" stroke="currentColor" stroke-width="4"/></svg></h1></div><div class="intro-side"><p>Ideas that spark. Stories that connect.<br/>Your daily dose of digital media,<br/>marketing, and creative thinking.</p><a class="text-link" href="#stories">Explore the stories <span>↘</span></a></div></section>
+  {featured && <section class="featured wrap"><a class="featured-visual" href={`/blog/${featured.slug}`}><img src={featured.cover} alt="Editorial illustration for the featured story" width="900" height="650" fetchpriority="high"/><span class="feature-sticker">A NEW<br/>POINT OF<br/><em>view.</em></span><span class="visual-caption">O2 EDITORIAL SERIES — 001</span></a><div class="featured-copy"><div class="featured-label"><span class="live-dot"/>IN THE SPOTLIGHT <span>↗</span></div><div class="featured-meta"><span class="pill">{featured.category}</span><span>{featured.readMinutes} MIN READ</span></div><h2><a href={`/blog/${featured.slug}`}>{featured.title}</a></h2><p>{featured.excerpt}</p><div class="featured-bottom"><div class="card-byline"><span class="avatar">O<span>2</span></span><span>{featured.author}<small>{formatDate(featured.publishedAt)}{featured.sample && ' · Sample article'}</small></span></div><a class="round-link" href={`/blog/${featured.slug}`} aria-label={`Read ${featured.title}`}>↗</a></div></div></section>}
+  {unavailable && <div class="wrap notice" role="status">Preview mode: sample articles are shown because the live database is temporarily unavailable.</div>}
+  <div class="topic-ribbon"><div class="wrap"><span>STAY CURIOUS.</span><span class="ribbon-star">✳</span><span>THINK DIFFERENTLY.</span><span class="ribbon-star">✳</span><span>MAKE AN IMPACT.</span><span class="ribbon-star">✳</span><span>STAY CURIOUS.</span></div></div>
+  <ArticleFeed initialPosts={articles} unavailable={unavailable} client:load/>
+  <section class="about-strip wrap"><span class="eyebrow">WHY WE’RE HERE</span><h2>The internet is loud.<br/><em>Let’s make it meaningful.</em></h2><div><p>O2 Media is a space for the thinkers, the makers, and the quietly ambitious. We explore the ideas shaping how we create, communicate, and connect.</p><a class="text-link" href="/about">A little about us <span>↗</span></a></div></section>
+  <Newsletter client:visible/>
+</O2Layout>

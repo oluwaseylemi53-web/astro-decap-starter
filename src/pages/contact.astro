@@ -1,20 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
-import { ContactPage } from '../components/pages/ContactPage';
-import { getEntry } from 'astro:content';
-
-const page = await getEntry('pages', 'contact');
-const d = page.data;
+import O2Layout from '../layouts/O2Layout.astro';
+import ContactForm from '../components/o2/ContactForm';
+export const prerender = true;
 ---
-
-<Base title={d.seo_title ?? d.title} description={d.seo_description}>
-  <ContactPage
-    client:load
-    heroHeading={d.hero_heading}
-    heroSubheading={d.hero_subheading}
-    email={d.email}
-    phone={d.phone}
-    address={d.address}
-    calendlyUrl={d.calendly_url}
-  />
-</Base>
+<O2Layout title="Let’s talk"><section class="wrap contact-layout"><div><div class="page-heading"><span class="eyebrow"><span class="live-dot"/>GOOD CONVERSATIONS START SOMEWHERE</span><h1>A question.<br/>An idea.<br/><em>A hello.</em></h1><p>Got a perspective to share, a collaboration in mind, or a question about the blog? Leave a message for the O2 Media team.</p></div><div class="contact-details"><h3>A few things worth knowing.</h3><p>Your message goes directly to our editorial dashboard. We use your email only to reply to your inquiry, not to add you to our newsletter.</p><p style="margin-top:15px">For privacy requests or newsletter help, select a clear subject and include the email associated with your account. Never send passwords or sensitive personal information.</p></div></div><ContactForm client:load/></section></O2Layout>

@@ -1,0 +1,9 @@
+---
+import '../styles/o2.css';
+import Header from '../components/o2/Header';
+import Footer from '../components/o2/Footer.astro';
+interface Props { title: string; description?: string; image?: string; article?: boolean; noindex?: boolean; }
+const { title, description = 'Fresh perspectives on digital media, marketing, branding, and the art of making meaningful connections. Welcome to O2 Media Blog.', image = '/media/brand.svg', article = false, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><title>{title} | O2 Media Blog</title><link rel="canonical" href={canonical}/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/>{noindex && <meta name="robots" content="noindex, nofollow"/>}<meta property="og:title" content={`${title} | O2 Media`}/><meta property="og:description" content={description}/><meta property="og:type" content={article ? 'article' : 'website'}/><meta property="og:url" content={canonical}/><meta property="og:image" content={new URL(image, Astro.site)}/><meta name="twitter:card" content="summary_large_image"/><link rel="alternate" type="application/rss+xml" title="O2 Media Blog" href="/rss.xml"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet"/><slot name="head"/></head><body><a class="skip-link" href="#main">Skip to content</a><Header client:load/><main id="main"><slot/></main><Footer/></body></html>

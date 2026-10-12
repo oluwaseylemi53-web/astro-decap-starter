@@ -4,3 +4,8 @@ dist/
 .env
 .DS_Store
 .superpowers/
+.netlify/*
+!.netlify/results.md
+!.netlify/features/
+.netlify/features/*
+!.netlify/features/netlify-identity
